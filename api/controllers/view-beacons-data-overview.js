@@ -38,6 +38,7 @@ module.exports = async function (req, res) {
     if(scenes.indexOf(el["scene"]) == -1){
       scenes.push(el["scene"]);
     }
+    items.push(el);
     /*if (el["scene"] == sceneName) {
       items.push(el);
     }*/

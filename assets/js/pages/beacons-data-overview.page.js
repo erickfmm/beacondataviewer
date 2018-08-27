@@ -4,7 +4,8 @@ parasails.registerPage('beacons-data-overview', {
   //  ╩╝╚╝╩ ╩ ╩╩ ╩╩═╝  ╚═╝ ╩ ╩ ╩ ╩ ╚═╝
   data: {
     //…
-    items: []
+    items: [],
+    originalItems: []
 
 
   },
@@ -21,6 +22,8 @@ parasails.registerPage('beacons-data-overview', {
     //…
 
     this.items = SAILS_LOCALS.items;
+    console.log(SAILS_LOCALS);
+    console.log(this.items);
     thecolors = {};
     for (const i in this.items) {
       if (this.items[i]["color"] != "all_exited_color_not_known") {
@@ -35,13 +38,11 @@ parasails.registerPage('beacons-data-overview', {
         this.items[i]["longid"] = this.items[i]["longid"].substr(0, 4);
       }
     }
+    
+    this.originalItems = this.items.slice();
 
     //console.log(this.items);
-    //console.log(this.makeHierarchihalDataD3());
-    this.putTreeMap(this.makeHierarchihalDataD3(), "#svgTreemapSquare");
-    this.putCirclePacking(this.makeHierarchihalDataD3(), "#svgCirclePacking");
-    //console.log(this.makeDataForces());
-    this.putGraphForces(this.makeDataForces(), "#svgGraphForces");
+    this.sceneChanged();
 
 
   },
@@ -51,15 +52,26 @@ parasails.registerPage('beacons-data-overview', {
   //  ╩╝╚╝ ╩ ╚═╝╩╚═╩ ╩╚═╝ ╩ ╩╚═╝╝╚╝╚═╝
   methods: {
     //…
+    plotGraphs: function(){
+      //console.log(this.makeHierarchihalDataD3());
+      //console.log(this.makeDataForces());
+      this.putTreeMap(this.makeHierarchihalDataD3(), "#svgTreemapSquare");
+      this.putCirclePacking(this.makeHierarchihalDataD3(), "#svgCirclePacking");
+      this.putGraphForces(this.makeDataForces(), "#svgGraphForces");
+    },
     sceneChanged: function(){
       var sceneName = document.getElementById("selectScene").value;
       var nuevositems = [];
-      for (const el of this.items) {
+      for (const el of this.originalItems) {
         if (el["scene"] == sceneName) {
           nuevositems.push(el);
         }
       }
       this.items = nuevositems;
+      console.log(sceneName);
+      console.log(this.items);
+      console.log(this.originalItems);
+      this.plotGraphs();
     },
     makeDataForces: function () {
       var data = {

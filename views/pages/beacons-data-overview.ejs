@@ -1,7 +1,7 @@
 <div id="beacons-data-overview" v-cloak>
 
   <h1>Graphs.</h1>
-  <select id="selectScene" onchange="sceneChanged()">
+  <select id="selectScene" @onchange="sceneChanged()">
     <%for(const sc of scenes){%>
       <option value="<%-sc%>"><%-sc%></option>
       <%}%>
