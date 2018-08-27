@@ -35,6 +35,7 @@ module.exports.routes = {
   'GET /account/profile':    { action: 'account/view-edit-profile' },
 
   'GET /beacons-data-overview': { action: 'view-beacons-data-overview' },
+  'GET /viewgraphs': { action: 'view-viewgraphs' },
 
 
   //  ╔═╗╔═╗╦  ╔═╗╔╗╔╔╦╗╔═╗╔═╗╦╔╗╔╔╦╗╔═╗

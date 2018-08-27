@@ -26,7 +26,7 @@ module.exports = {
   fn: async function (inputs, exits) {
 
     if (this.req.me) {
-      throw {redirect:'/beacons-data-overview'};
+      throw {redirect:'/viewgraphs'};
     }
 
     return exits.success();
