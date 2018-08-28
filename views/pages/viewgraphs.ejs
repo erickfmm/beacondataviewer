@@ -47,6 +47,20 @@
       <svg id="svgGraphForces" width="960" height="960"></svg>
     </div>
   </div>
+
+  <div>
+    <button type="button" class="btn btn-outline-primary" data-toggle="collapse" data-target="#collapseTimelineGraph" aria-expanded="false"
+      aria-controls="collapseTimelineGraph">
+      <i class="fa" />Timeline Graph</button>
+  </div>
+  <br />
+  <br />
+  <div class="collapse multi-collapse" id="collapseTimelineGraph">
+    <div class="card card-body">
+      <svg id="svgTimelineGraph" width="960" height="960"></svg>
+    </div>
+  </div>
+
 </div>
 </div>
 <%- /* Expose server-rendered data as window.SAILS_LOCALS :: */ exposeLocalsToBrowser() %>

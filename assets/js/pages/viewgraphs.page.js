@@ -1,3 +1,4 @@
+var mivariable = {};
 parasails.registerPage('viewgraphs', {
   //  ╦╔╗╔╦╔╦╗╦╔═╗╦    ╔═╗╔╦╗╔═╗╔╦╗╔═╗
   //  ║║║║║ ║ ║╠═╣║    ╚═╗ ║ ╠═╣ ║ ║╣
@@ -29,8 +30,8 @@ parasails.registerPage('viewgraphs', {
       if (this.items[i]["color"] != "all_exited_color_not_known") {
         thecolors[this.items[i]["longid"]] = this.items[i]["color"];
       }
-      this.items[i]["timeEv"] /= (1000.0);
-      this.items[i]["timeInterval"] /= (1000.0);
+      //this.items[i]["timeEv"] /= (1000.0);
+      //this.items[i]["timeInterval"] /= (1000.0);
     }
 
     for (const i in this.items) {
@@ -40,7 +41,7 @@ parasails.registerPage('viewgraphs', {
         this.items[i]["longid"] = this.items[i]["longid"].substr(0, 4);
       }
     }
-    
+
     this.originalItems = this.items.slice();
 
     //console.log(this.items);
@@ -54,7 +55,7 @@ parasails.registerPage('viewgraphs', {
   //  ╩╝╚╝ ╩ ╚═╝╩╚═╩ ╩╚═╝ ╩ ╩╚═╝╝╚╝╚═╝
   methods: {
     //…
-    plotGraphs: function(){
+    plotGraphs: function () {
       console.log(this.makeHierarchihalDataD3());
       console.log(this.makeDataForces());
       console.log("clean elements");
@@ -62,12 +63,14 @@ parasails.registerPage('viewgraphs', {
       $("#svgCirclePacking").html("");
       $("#svgGraphForces").html("");
       console.log("to put graphs");
+      console.log(this.makeTimelineData());
       this.putTreeMap(this.makeHierarchihalDataD3(), "#svgTreemapSquare");
       this.putCirclePacking(this.makeHierarchihalDataD3(), "#svgCirclePacking");
       this.putGraphForces(this.makeDataForces(), "#svgGraphForces");
+      this.putTimelineChart(this.makeTimelineData(), "#svgTimelineGraph");
       console.log("plot graphs done");
     },
-    sceneChanged: function(){
+    sceneChanged: function () {
       console.log("escena cambio");
       var sceneName = document.getElementById("selectScene").value;
       var nuevositems = [];
@@ -119,13 +122,13 @@ parasails.registerPage('viewgraphs', {
           for (const personName2 in beacsPerPerson) {
             if (personName1 != personName2 && longid in beacsPerPerson[personName2]) {
               let existsLink = false;
-              for(const iLinks in data["links"]){
-                if(data["links"][iLinks]["source"] == personName1 && data["links"][iLinks]["target"] == personName2){
+              for (const iLinks in data["links"]) {
+                if (data["links"][iLinks]["source"] == personName1 && data["links"][iLinks]["target"] == personName2) {
                   data["links"][iLinks]["value"] += beacsPerPerson[personName1][longid];
                   existsLink = true;
                 }
               }
-              if(!existsLink){
+              if (!existsLink) {
                 data["links"].push({
                   "source": personName1,
                   "target": personName2,
@@ -451,6 +454,281 @@ parasails.registerPage('viewgraphs', {
       //console.log(addedIds);
       //console.log(addedChildrens);
       return data;
+    },
+    makeTimelineData: function () {
+      var lanes = []; //persons
+      var timeBegin = Infinity;
+      var timeEnd = 0;
+      var items = [];
+      for (const el of this.items) {
+        if (lanes.indexOf(el["username"]) == -1 && el["timeInterval"] > 0) { //no esta
+          lanes.push(el["username"]);
+        }
+        if(el["timeEv"] < timeBegin){
+          timeBegin = el["timeEv"];
+        }
+      }
+      //console.log("time begin: ",timeBegin);
+      for (const el of this.items) {
+        if (el["timeInterval"] > 0) {
+          if (el["timeEv"] > timeEnd) {
+            timeEnd = el["timeEv"];
+          }
+          //console.log("begin: ", (el["timeEv"] - el["timeInterval"]));
+          //console.log("end: ", el["timeEv"]);
+          items.push({
+            "lane": lanes.indexOf(el["username"]),
+            "id": el["longid"],
+            "start": (el["timeEv"] - el["timeInterval"]) - timeBegin,
+            "end": el["timeEv"] - timeBegin
+          })
+        }
+      }
+      timeEnd = timeEnd - timeBegin;
+      timeBegin = 0;
+      var laneLength = lanes.length;
+      return {
+        lanes,
+        laneLength,
+        items,
+        timeBegin,
+        timeEnd
+      };
+
+    },
+    putTimelineChart: function (data, selector) {
+      var m = [20, 15, 15, 120], //top right bottom left
+        w = 960 - m[1] - m[3],
+        h = 500 - m[0] - m[2],
+        miniHeight = data.laneLength * 12 + 50,
+        mainHeight = h - miniHeight - 50;
+
+      //scales
+      var x = d3.scaleLinear()
+        .domain([data.timeBegin, data.timeEnd])
+        .range([0, w]);
+      var x1 = d3.scaleLinear()
+        .range([0, w]);
+      var y1 = d3.scaleLinear()
+        .domain([0, data.laneLength])
+        .range([0, mainHeight]);
+      var y2 = d3.scaleLinear()
+        .domain([0, data.laneLength])
+        .range([0, miniHeight]);
+
+      var chart = d3.select(selector)
+        .attr("width", w + m[1] + m[3])
+        .attr("height", h + m[0] + m[2])
+        .attr("class", "chart");
+
+      chart.append("defs").append("clipPath")
+        .attr("id", "clip")
+        .append("rect")
+        .attr("width", w)
+        .attr("height", mainHeight);
+
+      var main = chart.append("g")
+        .attr("transform", "translate(" + m[3] + "," + m[0] + ")")
+        .attr("width", w)
+        .attr("height", mainHeight)
+        .attr("class", "main");
+
+      var mini = chart.append("g")
+        .attr("transform", "translate(" + m[3] + "," + (mainHeight + m[0]) + ")")
+        .attr("width", w)
+        .attr("height", miniHeight)
+        .attr("class", "mini");
+
+      //main lanes and texts
+      main.append("g").selectAll(".laneLines")
+        .data(data.items)
+        .enter().append("line")
+        .attr("x1", m[1])
+        .attr("y1", function (d) {
+          return y1(d.lane);
+        })
+        .attr("x2", w)
+        .attr("y2", function (d) {
+          return y1(d.lane);
+        })
+        .attr("stroke", "lightgray")
+
+      main.append("g").selectAll(".laneText")
+        .data(data.lanes)
+        .enter().append("text")
+        .text(function (d) {
+          return d;
+        })
+        .attr("x", -m[1])
+        .attr("y", function (d, i) {
+          return y1(i + .5);
+        })
+        .attr("dy", ".5ex")
+        .attr("text-anchor", "end")
+        .attr("class", "laneText");
+
+      //mini lanes and texts
+      mini.append("g").selectAll(".laneLines")
+        .data(data.items)
+        .enter().append("line")
+        .attr("x1", m[1])
+        .attr("y1", function (d) {
+          return y2(d.lane);
+        })
+        .attr("x2", w)
+        .attr("y2", function (d) {
+          return y2(d.lane);
+        })
+        .attr("stroke", "lightgray");
+
+      mini.append("g").selectAll(".laneText")
+        .data(data.lanes)
+        .enter().append("text")
+        .text(function (d) {
+          return d;
+        })
+        .attr("x", -m[1])
+        .attr("y", function (d, i) {
+          return y2(i + .5);
+        })
+        .attr("dy", ".5ex")
+        .attr("text-anchor", "end")
+        .attr("class", "laneText");
+
+      var itemRects = main.append("g")
+        .attr("clip-path", "url(#clip)");
+
+      //mini item rects
+      mini.append("g").selectAll("miniItems")
+        .data(data.items)
+        .enter().append("rect")
+        .attr("class", function (d) {
+          return "miniItem" + d.lane;
+        })
+        .attr("x", function (d) {
+          return x(d.start);
+        })
+        .attr("y", function (d) {
+          return y2(d.lane + .5) - 5;
+        })
+        .attr("width", function (d) {
+          return x(d.end - d.start);
+        })
+        .attr("height", 10);
+
+      //mini labels
+      mini.append("g").selectAll(".miniLabels")
+        .data(data.items)
+        .enter().append("text")
+        .text(function (d) {
+          return d.id;
+        })
+        .attr("x", function (d) {
+          return x(d.start);
+        })
+        .attr("y", function (d) {
+          return y2(d.lane + .5);
+        })
+        .attr("dy", ".5ex");
+
+      //brush
+      var brush = d3.brushX(x)
+        .on("brush", display);
+
+      mini.append("g")
+        .attr("class", "x brush")
+        .call(brush)
+        .selectAll("rect")
+        .attr("y", 1)
+        .attr("height", miniHeight - 1);
+
+      display();
+
+      function display() {
+        var rects, labels,
+          minExtent = brush.extent()[0],
+          maxExtent = brush.extent()[1],
+          visItems = data.items.filter(function (d) {
+            return d.start < maxExtent && d.end > minExtent;
+          });
+          /*console.log("brush",brush);
+          console.log("extent()",brush.extent());
+          console.log("minExtent",minExtent);
+          console.log("maxextent",maxExtent);
+          console.log("extent()[0]",brush.extent()[0]);
+          console.log("extent",brush.extent);
+          console.log("extent[0]",brush.extent[0]);
+          //console.log("extent[0]()",brush.extent[0]());
+          console.log("extent[1]",brush.extent[1]);
+          console.log("visit", visItems);
+          mivariable = brush;
+          console.log("holiwiwiwiwiwiwiiwiws");*/
+          if(typeof(minExtent) != typeof(undefined) && typeof(maxExtent) != typeof(undefined)){
+            mini.select(".brush")
+                .call(brush.extent([minExtent, maxExtent]));
+                x1.domain([minExtent, maxExtent]);
+          }
+
+        
+
+        
+
+        //update main item rects
+        rects = itemRects.selectAll("rect")
+          .data(visItems, function (d) {
+            return d.id;
+          })
+          .attr("x", function (d) {
+            return x1(d.start);
+          })
+          .attr("width", function (d) {
+            return x1(d.end) - x1(d.start);
+          });
+
+        rects.enter().append("rect")
+          .attr("class", function (d) {
+            return "miniItem" + d.lane;
+          })
+          .attr("x", function (d) {
+            return x1(d.start);
+          })
+          .attr("y", function (d) {
+            return y1(d.lane) + 10;
+          })
+          .attr("width", function (d) {
+            return x1(d.end) - x1(d.start);
+          })
+          .attr("height", function (d) {
+            return .8 * y1(1);
+          });
+
+        rects.exit().remove();
+
+        //update the item labels
+        labels = itemRects.selectAll("text")
+          .data(visItems, function (d) {
+            return d.id;
+          })
+          .attr("x", function (d) {
+            return x1(Math.max(d.start, minExtent) + 2);
+          });
+
+        labels.enter().append("text")
+          .text(function (d) {
+            return d.id;
+          })
+          .attr("x", function (d) {
+            return x1(Math.max(d.start, minExtent));
+          })
+          .attr("y", function (d) {
+            return y1(d.lane + .5);
+          })
+          .attr("text-anchor", "start");
+
+        labels.exit().remove();
+
+      }
+
     }
 
   }

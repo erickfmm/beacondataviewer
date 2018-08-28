@@ -32,12 +32,12 @@ module.exports = {
         items.push(el);
     }
 
-    for (const i in items) {
+    /*for (const i in items) {
         var timEvD = new Date(items[i]["timeEv"]);
         items[i]["timeEv"] = (timEvD.getUTCMilliseconds() * 1000.0) + (timEvD.getUTCSeconds()) + (timEvD.getUTCMinutes() / 60.0);
         var timeInter = new Date(items[i]["timeInterval"]);
         items[i]["timeInterval"] = timeInter.getUTCMilliseconds() * 1000.0 + timeInter.getUTCSeconds() + timeInter.getUTCMinutes() / 60.0;
-    }
+    }*/
 
     // All done.
     return exits.success([items, scenes]);
