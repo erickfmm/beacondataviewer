@@ -1,5 +1,6 @@
-<div id="viewgraphs" v-cloak>
-
+<div id="viewgraphs" class="hasSidebar" v-cloak>
+    <% include ../includes/sidebar.ejs %>
+    <div id="content-wrapper">
   <h1>Graphs.</h1>
   <select id="selectScene" @change="sceneChanged()">
     <%for(const sc of scenes){%>
@@ -46,5 +47,6 @@
       <svg id="svgGraphForces" width="960" height="960"></svg>
     </div>
   </div>
+</div>
 </div>
 <%- /* Expose server-rendered data as window.SAILS_LOCALS :: */ exposeLocalsToBrowser() %>

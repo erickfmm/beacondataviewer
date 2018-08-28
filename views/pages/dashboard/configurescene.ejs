@@ -1,0 +1,31 @@
+
+<div id="configurescene" class="hasSidebar" v-cloak>
+  <% include ../../includes/sidebar.ejs %>
+  <div id="content-wrapper">
+      <h1>Graphs.</h1>
+        <form id="formfieldBeacons" method="POST" action="/beaconsData/modifyName">
+          <select id="selectScene" @change="sceneChanged()">
+          <%for(const sc of scenes){%>
+            <option value="<%-sc%>"><%-sc%></option>
+          <%}%>
+        </select>
+
+        <table id="tabletomodify" class="table">
+          <thead class="thead-dark">
+            <tr>
+              <td>Id</td>
+              <td>Color</td>
+              <td>Nuevo nombre</td>
+            </tr>
+          </thead>
+          <tbody id="tabletomodifyTbody">
+
+          </tbody>
+
+        </table>
+        <button class="btn btn-success" type="submit">Submit</button>
+        <button class="btn btn-danger" type="button" @click="sceneChanged()">Reset</button>
+      </form>
+    </div>
+</div>
+<%- /* Expose server-rendered data as window.SAILS_LOCALS :: */ exposeLocalsToBrowser() %>

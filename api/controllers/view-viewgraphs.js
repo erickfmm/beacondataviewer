@@ -30,36 +30,9 @@ module.exports = async function (req, res) {
   var contents = fs.readFileSync("sample-data/sample-data2-realesexpkarla-malos.json");
   var jsonContents = JSON.parse(contents);
 
-
-  var items = [];
-  var scenes = [];
-  //var sceneName = "Default";
-  for (const el of jsonContents) {
-    if(scenes.indexOf(el["scene"]) == -1){
-      scenes.push(el["scene"]);
-    }
-    items.push(el);
-    /*if (el["scene"] == sceneName) {
-      items.push(el);
-    }*/
-  }
-
-  for (const i in items) {
-    //console.log(items[i]["timeEv"]);
-    //var timEvD = new Date(Date.parse(items[i]["timeEv"]));
-    //console.log(timEvD.getUTCHours());
-    var timEvD = new Date(items[i]["timeEv"]);
-    //
-    items[i]["timeEv"] = (timEvD.getUTCMilliseconds() * 1000.0) + (timEvD.getUTCSeconds()) + (timEvD.getUTCMinutes() / 60.0); //+(timEvD.getUTCHours()-21)/3600.0;
-    //if (items[i]["timeInterval"] != 0) {
-      //var timeInter = new Date(Date.parse(items[i]["timeInterval"]));
-      var timeInter = new Date(items[i]["timeInterval"]);
-      items[i]["timeInterval"] = timeInter.getUTCMilliseconds() * 1000.0 + timeInter.getUTCSeconds() + timeInter.getUTCMinutes() / 60.0; //+(timeInter.getUTCHours()-21)/3600.0;
-      
-    //}
-  }
-  // Respond with view.
-
+  var salida = await sails.helpers.preprocess(jsonContents);
+  var items = salida[0];
+  var scenes = salida[1];
   //return exits.success();
   return res.view('pages/viewgraphs', {
     items: items,
