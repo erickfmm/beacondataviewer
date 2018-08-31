@@ -651,6 +651,7 @@ parasails.registerPage('viewgraphs', {
           visItems = data.items.filter(function (d) {
             return d.start < maxExtent && d.end > minExtent;
           });
+          mivariable = brush;
           /*console.log("brush",brush);
           console.log("extent()",brush.extent());
           console.log("minExtent",minExtent);
@@ -661,7 +662,6 @@ parasails.registerPage('viewgraphs', {
           //console.log("extent[0]()",brush.extent[0]());
           console.log("extent[1]",brush.extent[1]);
           console.log("visit", visItems);
-          mivariable = brush;
           console.log("holiwiwiwiwiwiwiiwiws");*/
           if(typeof(minExtent) != typeof(undefined) && typeof(maxExtent) != typeof(undefined)){
             mini.select(".brush")

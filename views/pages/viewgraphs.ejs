@@ -2,11 +2,14 @@
     <% include ../includes/sidebar.ejs %>
     <div id="content-wrapper">
   <h1>Graphs.</h1>
-  <select id="selectScene" @change="sceneChanged()">
+  <div class="form-group">
+      <label for="selectScene">Select scene:</label>
+  <select  class="form-control" id="selectScene" @change="sceneChanged()">
     <%for(const sc of scenes){%>
       <option value="<%-sc%>"><%-sc%></option>
       <%}%>
   </select>
+</div>
 
   <div>
     <button type="button" class="btn btn-outline-primary" data-toggle="collapse" data-target="#collapseTreemapSquare" aria-expanded="false"

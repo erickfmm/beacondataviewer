@@ -29,7 +29,7 @@ module.exports = {
       throw {redirect:'/viewgraphs'};
     }
 
-    return exits.success();
+    return exits.redirect('/login');//success();
 
   }
 
