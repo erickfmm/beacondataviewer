@@ -62,12 +62,15 @@ parasails.registerPage('viewgraphs', {
       $("#svgTreemapSquare").html("");
       $("#svgCirclePacking").html("");
       $("#svgGraphForces").html("");
+      $("#divClusterPurity").html("");
       console.log("to put graphs");
       console.log(this.makeTimelineData());
       this.putTreeMap(this.makeHierarchihalDataD3(), "#svgTreemapSquare");
       this.putCirclePacking(this.makeHierarchihalDataD3(), "#svgCirclePacking");
       this.putGraphForces(this.makeDataForces(), "#svgGraphForces");
       this.putTimelineChart(this.makeTimelineData(), "#svgTimelineGraph");
+      var dataCluster = this.makeDataClusterPurity();
+      this.putClusterPurityGraph(dataCluster[0], dataCluster[1], "divClusterPurity", "#click_1", "#click_2");
       console.log("plot graphs done");
     },
     sceneChanged: function () {
@@ -84,6 +87,88 @@ parasails.registerPage('viewgraphs', {
       console.log(this.items);
       console.log(this.originalItems);
       this.plotGraphs();
+    },
+    makeDataClusterPurity: function(){
+      var data=[];
+      var hierarchical = this.makeHierarchihalDataD3();
+      var maxNumBeac = 0;
+      var beaconNames = [];
+      for (const p of hierarchical.children) {
+        var valuesp = {values: [], total: 0};
+        maxNumBeac = Math.max(maxNumBeac, p.children.length);
+        for (const beac of p.children) {
+          valuesp.values.push({
+            ele: beac.size,
+            type: beac.name
+          });
+          valuesp.total += beac.size;
+          if(beaconNames.indexOf(beac.name) == -1){
+            beaconNames.push(beac.name);
+          }
+        }
+        data.push(valuesp);
+      }
+      //to normalize sizes to 1 (relative to its total)
+      var maxTotal = 0;
+      var multiplier = 5;
+      for (const el of data) {
+        maxTotal = Math.max(el.total, maxTotal);
+      }
+      for (const i in data) {
+        for (const j in data[i].values) {
+          data[i].values[j].ele = (data[i].values[j].ele / data[i].total) * multiplier;
+        }
+        data[i].total = (data[i].total / maxTotal) * multiplier;
+      }
+
+      //to assign 0 if beacon is not present
+      /*for (const i in data) {
+        for (const beacName of beaconNames) {
+          var isHere = false;
+          for (const j in data[i].values) {
+            if(data[i].values[j].type == beacName){
+              isHere = true;
+              break;
+            }
+          }
+          if(isHere == false){
+            data[i].values.push({
+              ele: 0,
+              type: beacName
+            });
+          }
+        }
+        
+      }*/
+      function sortByKey(array, key) {
+        return array.sort(function(a, b) {
+            var x = a[key]; var y = b[key];
+            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+        });
+    }
+    for (const i in data) {
+      sortByKey(data[i].values, "type");
+    }
+
+      console.log("data cluster", maxNumBeac, data);
+      return [data, maxNumBeac];
+
+    },
+    putClusterPurityGraph: function(data, numofCats, idName, selectorRadio1, selectorRadio2){
+      try {
+        var obj = d3.clusterpuritychart().containerID(idName).noOfCategories(numofCats).fixAngleLayout(false);
+        clickFun();
+        d3.select('#'+idName).append('svg').datum(data).call(obj);
+      } catch (error) {
+        console.log("error in put cluster graph", error);
+      }
+      
+      d3.select(selectorRadio1).on('click',clickFun);
+      d3.select(selectorRadio2).on('click',clickFun);
+
+      function clickFun(){
+          obj.change($(selectorRadio1).is(":checked"));//document.getElementById('click_1').checked);
+      }
     },
     makeDataForces: function () {
       var data = {

@@ -11,58 +11,75 @@
   </select>
 </div>
 
-  <div>
+<div class="plot-container">
+  <div class="button-collapsableplot-container">
     <button type="button" class="btn btn-outline-primary" data-toggle="collapse" data-target="#collapseTreemapSquare" aria-expanded="false"
       aria-controls="collapseTreemapSquare">
       <i class="fa" />Treemap</button>
   </div>
-  <br />
-  <br />
   <div class="collapse multi-collapse" id="collapseTreemapSquare">
     <div class="card card-body">
       <svg id="svgTreemapSquare" width="960" height="570"></svg>
     </div>
   </div>
+</div>
 
-
-  <div>
+  <div class="plot-container">
+  <div class="button-collapsableplot-container">
     <button type="button" class="btn btn-outline-primary" data-toggle="collapse" data-target="#collapsCirclePacking" aria-expanded="false"
       aria-controls="collapsCirclePacking">
       <i class="fa" />Circular Treemap</button>
   </div>
-  <br />
-  <br />
   <div class="collapse multi-collapse" id="collapsCirclePacking">
     <div class="card card-body">
       <svg id="svgCirclePacking" width="960" height="960"></svg>
     </div>
   </div>
+  </div>
 
-  <div>
+  <div class="plot-container">
+  <div class="button-collapsableplot-container">
     <button type="button" class="btn btn-outline-primary" data-toggle="collapse" data-target="#collapseGraphForces" aria-expanded="false"
       aria-controls="collapseGraphForces">
       <i class="fa" />Graph Forces directed</button>
   </div>
-  <br />
-  <br />
   <div class="collapse multi-collapse" id="collapseGraphForces">
     <div class="card card-body">
       <svg id="svgGraphForces" width="960" height="960"></svg>
     </div>
   </div>
+  </div>
 
-  <div>
+
+  <div class="plot-container">
+  <div class="button-collapsableplot-container">
     <button type="button" class="btn btn-outline-primary" data-toggle="collapse" data-target="#collapseTimelineGraph" aria-expanded="false"
       aria-controls="collapseTimelineGraph">
       <i class="fa" />Timeline Graph</button>
   </div>
-  <br />
-  <br />
   <div class="collapse multi-collapse" id="collapseTimelineGraph">
     <div class="card card-body">
       <svg id="svgTimelineGraph" width="960" height="960"></svg>
     </div>
   </div>
+</div>
+
+
+<div class="plot-container">
+  <div class="button-collapsableplot-container">
+    <button type="button" class="btn btn-outline-primary" data-toggle="collapse" 
+    data-target="#collapseClusterPurity" aria-expanded="false" aria-controls="collapseClusterPurity">
+      <i class="fa" />Cluster Graph</button>
+  </div>
+  <div class="collapse multi-collapse" id="collapseClusterPurity">
+    <div class="card card-body">
+        <input id="click_1" type="radio" name="sel" value="false" checked="true">Length representation
+        <input id="click_2" type="radio" name="sel" value="true">Angle representation
+      <div id="divClusterPurity">
+      </div>
+    </div>
+  </div>
+</div>
 
 </div>
 </div>
